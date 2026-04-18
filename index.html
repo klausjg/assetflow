@@ -5,6 +5,9 @@
   <title>Asset Flow</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="./manifest.json">
+
   <link rel="apple-touch-icon" sizes="180x180" href="./icon.png?v=1">
   <link rel="icon" type="image/png" sizes="32x32" href="./icon.png?v=1">
   <link rel="icon" type="image/png" sizes="16x16" href="./icon.png?v=1">
@@ -13,14 +16,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Asset Flow">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#0F1218">
 
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Pinyon+Script&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    /* ─────────────────────────────────────────
-       Asset Flow 웹앱과 동일한 테마 토큰
-       ───────────────────────────────────────── */
     :root{
       --bg:#0F1218; --surface:#131820; --card:#171E27; --card2:#1C2535;
       --border:#1E2A38; --border-light:#2A3D52;
@@ -49,7 +50,6 @@
       transition: background .3s ease, color .3s ease;
     }
 
-    /* 은은한 accent glow 배경 — 웹앱 총자산 카드와 동일 */
     body::before {
       content:'';
       position:fixed; inset:0;
@@ -69,6 +69,7 @@
       align-items:center; justify-content:center;
       text-align:center;
       padding:30px; z-index:1;
+      overflow-y: auto;
     }
 
     .icon-preview {
@@ -83,9 +84,6 @@
       flex-shrink:0;
     }
 
-    /* ─────────────────────────────────────────
-       Pinyon Script 브랜드 타이틀 — 웹앱 topbar와 동일 톤
-       ───────────────────────────────────────── */
     @keyframes brandShimmer {
       0% { background-position: 0% 50%; }
       100% { background-position: 200% 50%; }
@@ -137,60 +135,254 @@
       letter-spacing: 0.3px;
       font-family: var(--sans);
       transition: transform 0.15s ease, box-shadow 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
     .guide-button:active {
       transform: translateY(1px);
       box-shadow: 0 5px 14px rgba(201,169,110,0.25),
                   inset 0 1px 0 rgba(255,255,255,0.15);
     }
+    .guide-button svg {
+      width: 16px; height: 16px;
+    }
+
+    .setup-card {
+      width: 100%;
+      max-width: 340px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+
+    .setup-label {
+      font-size: 11px;
+      color: var(--sub);
+      letter-spacing: 1.5px;
+      font-family: var(--mono);
+      font-weight: 500;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      text-align: left;
+    }
+
+    .url-input {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 12px;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+      word-break: break-all;
+    }
+    .url-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-dim);
+    }
+    .url-input::placeholder {
+      color: var(--muted);
+      opacity: 0.7;
+    }
+
+    .url-hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 10px;
+      text-align: left;
+      line-height: 1.6;
+    }
+    .url-hint code {
+      font-family: var(--mono);
+      color: var(--text-dim);
+      background: var(--card2);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 10px;
+    }
+
+    .error-msg {
+      color: #ff7a7a;
+      font-size: 11px;
+      margin-top: 8px;
+      text-align: left;
+      min-height: 16px;
+    }
+
+    .reset-link {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 24px;
+      text-decoration: underline;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      font-family: var(--sans);
+      transition: color .15s;
+      background: none;
+      border: none;
+    }
+    .reset-link:hover { color: var(--sub); }
+
+    /* 기기 배지 */
+    .device-badge {
+      display: inline-block;
+      font-size: 10px;
+      color: var(--sub);
+      letter-spacing: 2px;
+      font-family: var(--mono);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+    }
 
     /* ─────────────────────────────────────────
-       설치 가이드 오버레이 — Liquid Glass 느낌
+       설치 가이드 오버레이 - 개선 버전
        ───────────────────────────────────────── */
     #guide-overlay {
       display:none;
       position:fixed; inset:0;
-      background: rgba(10,15,24,0.88);
+      background: rgba(10,15,24,0.92);
       z-index:9999;
       backdrop-filter: blur(16px) saturate(180%);
       -webkit-backdrop-filter: blur(16px) saturate(180%);
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 60px 30px 120px;
+      overflow-y: auto;
     }
-    .instruction {
-      position:absolute; bottom:100px;
-      width:100%; text-align:center; padding:20px;
-    }
-    .instruction h3 {
-      color: var(--accent);
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-      margin-bottom: 14px;
-      font-family: var(--sans);
-    }
-    .instruction p {
+    #guide-overlay.active { display: flex; }
+
+    .guide-close {
+      position: absolute;
+      top: 20px; right: 20px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
       color: var(--text);
-      font-size: 14px;
-      line-height: 1.9;
-      font-weight: 400;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .15s;
+      z-index: 10;
     }
-    .instruction strong {
+    .guide-close:hover { background: rgba(255,255,255,0.14); }
+
+    .guide-title {
+      font-family: var(--script);
+      font-size: 32px;
+      color: var(--text);
+      margin-bottom: 6px;
+      line-height: 1.1;
+    }
+    .guide-subtitle {
+      font-size: 11px;
+      color: var(--sub);
+      letter-spacing: 3px;
+      font-family: var(--mono);
+      font-weight: 500;
+      margin-bottom: 32px;
+      text-transform: uppercase;
+    }
+
+    .guide-steps {
+      width: 100%;
+      max-width: 340px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .guide-step {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-align: left;
+    }
+
+    .step-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #1a1309;
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: var(--mono);
+    }
+
+    .step-icon {
+      width: 32px; height: 32px;
+      color: var(--accent);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .step-icon svg {
+      width: 100%; height: 100%;
+      fill: currentColor;
+    }
+
+    .step-text {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.55;
+      flex: 1;
+    }
+    .step-text strong {
       color: var(--accent2);
       font-weight: 600;
     }
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); opacity: 0.6; }
-      50%      { transform: translateY(14px); opacity: 1; }
+
+    /* 하단 화살표 - iOS용 */
+    @keyframes bounceDown {
+      0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.6; }
+      50%      { transform: translateX(-50%) translateY(10px); opacity: 1; }
     }
-    .arrow {
-      font-size: 44px;
+    .guide-arrow {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
       color: var(--accent);
-      animation: bounce 1.2s infinite ease-in-out;
-      margin-top: 22px;
+      animation: bounceDown 1.2s infinite ease-in-out;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      letter-spacing: 2px;
+      font-family: var(--mono);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .guide-arrow svg {
+      width: 24px; height: 24px;
+      fill: currentColor;
     }
 
-    /* ─────────────────────────────────────────
-       로딩 브랜드 마크 — 웹앱 globalLoader와 동일 구조
-       ───────────────────────────────────────── */
+    /* 로딩 브랜드 */
     .loading-brand {
       position:relative;
       width:80px; height:80px;
@@ -258,7 +450,6 @@
       margin-top: 6px;
     }
 
-    /* 도트 인디케이터 */
     @keyframes dotBounce {
       0%,80%,100% { transform: translateY(0);   opacity:.35; }
       40%         { transform: translateY(-7px); opacity:1;   }
@@ -292,10 +483,9 @@
   </style>
 
   <script>
-    /* 웹앱 배포 URL — 사용자 본인 URL로 교체 */
-    const APP_URL = "https://script.google.com/macros/s/AKfycbzOrPRi9lrwDJlFNIl-2rzlAgugfiwUZJ6Lz_Rnl1nAqtM_tXLHok-AsNVJBNp0pmwA/exec";
+    const STORAGE_KEY = 'af-app-url';
+    let deferredInstallPrompt = null;
 
-    /* 웹앱에서 저장한 테마를 읽어와 즉시 적용 */
     (function applyStoredTheme(){
       try {
         const t = localStorage.getItem('af-theme') || 'obsidian';
@@ -303,42 +493,253 @@
       } catch(e) {}
     })();
 
-    function init() {
-      const isStandalone = window.navigator.standalone === true ||
-                           window.matchMedia('(display-mode: standalone)').matches;
+    (function checkUrlParam(){
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const appParam = params.get('app');
+        if (appParam && isValidGasUrl(appParam)) {
+          localStorage.setItem(STORAGE_KEY, appParam);
+          history.replaceState(null, '', window.location.pathname);
+        }
+      } catch(e) {}
+    })();
 
+    function isValidGasUrl(url) {
+      if (!url || typeof url !== 'string') return false;
+      const trimmed = url.trim();
+      return /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec/.test(trimmed);
+    }
+
+    function getStoredUrl() {
+      try { return localStorage.getItem(STORAGE_KEY); }
+      catch(e) { return null; }
+    }
+
+    function detectDevice() {
+      const ua = navigator.userAgent;
+      const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+      const isAndroid = /Android/.test(ua);
+      return { isIOS, isAndroid };
+    }
+
+    function saveUrl() {
+      const input = document.getElementById('gas-url-input');
+      const errorEl = document.getElementById('url-error');
+      const url = input.value.trim();
+
+      if (!url) {
+        errorEl.textContent = 'URL을 입력하세요';
+        return;
+      }
+      if (!isValidGasUrl(url)) {
+        errorEl.textContent = '올바른 GAS URL 형식이 아닙니다';
+        return;
+      }
+
+      try {
+        localStorage.setItem(STORAGE_KEY, url);
+        errorEl.textContent = '';
+        init();
+      } catch(e) {
+        errorEl.textContent = '저장 실패. 브라우저 설정을 확인하세요.';
+      }
+    }
+
+    function resetUrl() {
+      if (!confirm('등록된 웹앱 URL을 초기화하시겠어요?')) return;
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+        init();
+      } catch(e) {}
+    }
+
+    function hideAllScreens() {
+      document.getElementById('setup-ui').style.display = 'none';
       document.getElementById('install-ui').style.display = 'none';
       document.getElementById('loading-ui').style.display = 'none';
+      document.getElementById('guide-overlay').classList.remove('active');
+    }
+
+    async function triggerInstall() {
+      // Chrome 자동 설치 프롬프트 사용 가능 시 → 원클릭 설치
+      if (deferredInstallPrompt) {
+        try {
+          deferredInstallPrompt.prompt();
+          const choice = await deferredInstallPrompt.userChoice;
+          deferredInstallPrompt = null;
+          updateInstallButton();
+          if (choice.outcome !== 'accepted') {
+            // 사용자가 취소한 경우 가이드 보여주기
+            showGuide();
+          }
+        } catch (e) {
+          console.warn('Install prompt failed:', e);
+          showGuide();
+        }
+        return;
+      }
+
+      // 프롬프트 없음 → 가이드 표시
+      showGuide();
+    }
+
+    function showGuide() {
+      const device = detectDevice();
+      const iosGuide = document.getElementById('guide-ios');
+      const androidGuide = document.getElementById('guide-android');
+      const arrow = document.getElementById('guide-arrow-ios');
+
+      if (device.isIOS) {
+        iosGuide.style.display = 'block';
+        androidGuide.style.display = 'none';
+        arrow.style.display = 'flex';
+      } else {
+        iosGuide.style.display = 'none';
+        androidGuide.style.display = 'block';
+        arrow.style.display = 'none';
+      }
+
+      document.getElementById('guide-overlay').classList.add('active');
+    }
+
+    function closeGuide() {
+      document.getElementById('guide-overlay').classList.remove('active');
+    }
+
+    function updateInstallButton() {
+      const btn = document.getElementById('install-btn');
+      const badge = document.getElementById('device-badge');
+      if (!btn) return;
+
+      const device = detectDevice();
+
+      if (deferredInstallPrompt) {
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>홈 화면에 설치`;
+        if (badge) badge.textContent = '⚡ ONE-TAP INSTALL';
+      } else if (device.isIOS) {
+        btn.textContent = '앱 설치 가이드';
+        if (badge) badge.textContent = 'iOS SAFARI';
+      } else if (device.isAndroid) {
+        btn.textContent = '앱 설치 가이드';
+        if (badge) badge.textContent = 'ANDROID';
+      } else {
+        btn.textContent = '앱 설치 가이드';
+        if (badge) badge.textContent = 'DESKTOP';
+      }
+    }
+
+    function init() {
+      hideAllScreens();
+
+      const APP_URL = getStoredUrl();
+
+      if (!APP_URL) {
+        document.getElementById('setup-ui').style.display = 'flex';
+        const input = document.getElementById('gas-url-input');
+        if (input) input.value = '';
+        return;
+      }
+
+      const isStandalone = window.navigator.standalone === true ||
+                           window.matchMedia('(display-mode: standalone)').matches;
 
       if (isStandalone) {
         document.getElementById('loading-ui').style.display = 'flex';
         setTimeout(() => { window.location.href = APP_URL; }, 300);
-      } else {
-        document.getElementById('install-ui').style.display = 'flex';
+        return;
       }
+
+      document.getElementById('install-ui').style.display = 'flex';
+      updateInstallButton();
     }
 
-    document.addEventListener("DOMContentLoaded", init);
+    /* PWA 설치 프롬프트 캡처 */
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      updateInstallButton();
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredInstallPrompt = null;
+      updateInstallButton();
+      closeGuide();
+    });
+
+    /* Service Worker 등록 */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => {
+          console.warn('SW registration failed:', err);
+        });
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const input = document.getElementById('gas-url-input');
+      if (input) {
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            saveUrl();
+          }
+        });
+      }
+      init();
+    });
   </script>
 </head>
 <body>
 
-  <!-- 설치 안내 화면 -->
-  <div id="install-ui" class="full-screen">
+  <!-- ① URL 등록 화면 -->
+  <div id="setup-ui" class="full-screen">
     <img src="./icon.png?v=1" class="icon-preview" alt="Asset Flow">
     <div class="brand-title">Asset Flow</div>
     <div class="brand-sub">PORTFOLIO</div>
     <p class="description">
-      나의 자산을 한눈에, 우아하게.<br>
-      아래 버튼을 눌러 홈 화면에 설치하세요.
+      먼저 본인의 웹앱 URL을 등록하세요.<br>
+      기기에 안전하게 저장됩니다.
     </p>
-    <button class="guide-button"
-            onclick="document.getElementById('guide-overlay').style.display='block'">
-      앱 설치 가이드
+
+    <div class="setup-card">
+      <div class="setup-label">GOOGLE APPS SCRIPT URL</div>
+      <input type="url"
+             id="gas-url-input"
+             class="url-input"
+             placeholder="https://script.google.com/macros/s/.../exec"
+             autocomplete="off"
+             autocapitalize="off"
+             spellcheck="false">
+      <div class="error-msg" id="url-error"></div>
+      <div class="url-hint">
+        Apps Script에서 <code>배포 → 웹 앱</code>으로 배포한 URL을 붙여넣으세요.
+      </div>
+    </div>
+
+    <button class="guide-button" onclick="saveUrl()">
+      저장하고 계속하기
     </button>
   </div>
 
-  <!-- 로딩 화면 — 웹앱 globalLoader와 동일 톤 -->
+  <!-- ② 설치 안내 화면 -->
+  <div id="install-ui" class="full-screen">
+    <img src="./icon.png?v=1" class="icon-preview" alt="Asset Flow">
+    <div class="brand-title">Asset Flow</div>
+    <div class="brand-sub">PORTFOLIO</div>
+    <div class="device-badge" id="device-badge">DETECTING...</div>
+    <p class="description">
+      나의 자산을 한눈에, 우아하게.<br>
+      홈 화면에 설치하고 언제든 열어보세요.
+    </p>
+    <button class="guide-button" id="install-btn" onclick="triggerInstall()">
+      앱 설치
+    </button>
+    <button class="reset-link" onclick="resetUrl()">
+      웹앱 URL 다시 등록하기
+    </button>
+  </div>
+
+  <!-- ③ 로딩 화면 -->
   <div id="loading-ui" class="full-screen">
     <div class="loading-brand">
       <div class="lb-ring r1"></div>
@@ -352,20 +753,108 @@
     <div class="loading-dots">
       <span></span><span></span><span></span>
     </div>
-    <div class="fallback-msg" onclick="window.location.href=APP_URL">
+    <div class="fallback-msg" onclick="var u=getStoredUrl(); if(u) window.location.href=u;">
       페이지가 멈췄다면 여기를 터치하세요
     </div>
   </div>
 
   <!-- 설치 가이드 오버레이 -->
-  <div id="guide-overlay" onclick="this.style.display='none'">
-    <div class="instruction">
-      <h3>홈 화면에 추가</h3>
-      <p>
-        1. 하단의 <strong>공유</strong> 버튼을 탭하세요.<br>
-        2. 목록에서 <strong>'홈 화면에 추가'</strong>를 선택하세요.
-      </p>
-      <div class="arrow">↓</div>
+  <div id="guide-overlay">
+    <button class="guide-close" onclick="closeGuide()">×</button>
+
+    <div class="guide-title">홈 화면에 추가</div>
+    <div class="guide-subtitle">INSTALL GUIDE</div>
+
+    <!-- iOS Safari 가이드 -->
+    <div id="guide-ios" style="display:none; width:100%; max-width:340px;">
+      <div class="guide-steps">
+        <div class="guide-step">
+          <div class="step-num">1</div>
+          <div class="step-icon">
+            <!-- iOS 공유 아이콘 -->
+            <svg viewBox="0 0 24 24">
+              <path d="M12 2L8 6l1.41 1.41L11 5.83V16h2V5.83l1.59 1.58L16 6l-4-4zM5 20V10h3V8H3v14h18V8h-5v2h3v10H5z"/>
+            </svg>
+          </div>
+          <div class="step-text">
+            하단의 <strong>공유</strong> 버튼을 탭하세요
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="step-num">2</div>
+          <div class="step-icon">
+            <!-- 홈화면 추가 아이콘 -->
+            <svg viewBox="0 0 24 24">
+              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 11h-4v4h-2v-4H7v-2h4V8h2v4h4v2z"/>
+            </svg>
+          </div>
+          <div class="step-text">
+            <strong>홈 화면에 추가</strong>를 선택하세요
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="step-num">3</div>
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+          </div>
+          <div class="step-text">
+            우측 상단 <strong>추가</strong>를 탭하면 완료
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 안드로이드 수동 가이드 -->
+    <div id="guide-android" style="display:none; width:100%; max-width:340px;">
+      <div class="guide-steps">
+        <div class="guide-step">
+          <div class="step-num">1</div>
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+            </svg>
+          </div>
+          <div class="step-text">
+            우측 상단 <strong>⋮ 메뉴</strong>를 탭하세요
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="step-num">2</div>
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 11h-4v4h-2v-4H7v-2h4V8h2v4h4v2z"/>
+            </svg>
+          </div>
+          <div class="step-text">
+            <strong>홈 화면에 추가</strong> 또는 <strong>앱 설치</strong>를 선택하세요
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="step-num">3</div>
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+          </div>
+          <div class="step-text">
+            <strong>추가</strong> 버튼을 탭하면 완료
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- iOS 전용 하단 화살표 (공유 버튼 위치 가리킴) -->
+    <div class="guide-arrow" id="guide-arrow-ios" style="display:none;">
+      <span>공유 버튼</span>
+      <svg viewBox="0 0 24 24">
+        <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+      </svg>
     </div>
   </div>
 
