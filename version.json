@@ -1,7 +1,7 @@
 {
-  "rev": 1,
+  "rev": 2,
   "releaseDate": "2026-04-20",
-  "releaseTime": "13:23",
-  "title": "Initial release",
-  "notes": "AssetFlow 최초 배포 — 통합 자산 관리 기능"
+  "releaseTime": "16:52",
+  "title": "중앙 워크플로 확장 테스트",
+  "notes": "<!-- 이 파일에 다음 릴리즈의 업데이트 내역을 마크다운으로 작성하세요.\n     Actions → \"Bump version & release\" 실행 시 이 내용이 자동으로 반영됩니다.\n     릴리즈 발행 후 이 파일은 자동으로 비워집니다. -->\n\n## ✨ 새로운 기능\n- \n\n## 🛠 개선\n- \n\n## 🐛 버그 수정\n-"
 }
