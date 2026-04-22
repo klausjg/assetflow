@@ -643,6 +643,15 @@
       const isStandalone = window.navigator.standalone === true ||
                            window.matchMedia('(display-mode: standalone)').matches;
 
+      const device = detectDevice();
+
+      /* [PC] 데스크톱에서 브라우저로 접속 → 설치 안내 없이 바로 GAS로 */
+      if (device.isDesktop && !isStandalone) {
+        document.getElementById('loading-ui').style.display = 'flex';
+        setTimeout(() => { window.location.href = APP_URL; }, 300);
+        return;
+      }
+
       if (isStandalone) {
         document.getElementById('loading-ui').style.display = 'flex';
         setTimeout(() => { window.location.href = APP_URL; }, 300);
