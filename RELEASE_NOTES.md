@@ -9,6 +9,8 @@
 ## 🔧 변경/개선
 - Asset Flow Title 옆에 업데이트 시간 추가
 - TOP HOLDINGS 터치 내역에서 보유 계좌 추가
+- TOP HOLDINGS 내역이 PC에서는 더 많이 보이게 개선 및 전체 보기 추가
+- TOP RETURNS 내역이 PC에서는 더 많이 보이게 개선 및 전체 보기 추가
 
 ## 🐛 수정된 문제
 - TOP HOLDINGS 계산 오류 수정
