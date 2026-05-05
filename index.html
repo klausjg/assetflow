@@ -629,6 +629,8 @@
     }
 
     function init() {
+      window._pwaStart = performance.now();
+      console.log('[PWA] init start');
       hideAllScreens();
 
       const APP_URL = getStoredUrl();
@@ -654,6 +656,7 @@
 
       if (isStandalone) {
         document.getElementById('loading-ui').style.display = 'flex';
+        console.log(`[PWA] redirect to GAS: ${(performance.now() - window._pwaStart).toFixed(0)}ms`);
         setTimeout(() => { window.location.href = APP_URL; }, 300);
         return;
       }
