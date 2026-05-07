@@ -382,92 +382,83 @@
       fill: currentColor;
     }
 
-    /* 로딩 브랜드 */
-    .loading-brand {
-      position:relative;
-      width:80px; height:80px;
-      display:flex; align-items:center; justify-content:center;
-      margin-bottom: 24px;
+    /* === Concept B · Vault impact === */
+    .vault-stage {
+      position: relative;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 64px;
     }
-    .lb-ring {
-      position:absolute; inset:0;
-      border-radius:50%;
-      border: 1.5px solid var(--accent);
+    .vault-shock {
+      position: absolute;
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      border: 1px solid var(--accent);
+      opacity: 0;
+      animation: vaultShock 3s ease-out infinite;
     }
-    @keyframes lbRingPulse  { 0%,100%{transform:scale(1);opacity:.25} 50%{transform:scale(1.18);opacity:.55} }
-    @keyframes lbRingPulse2 { 0%,100%{transform:scale(1);opacity:.15} 50%{transform:scale(1.32);opacity:.35} }
-    .lb-ring.r1 { animation: lbRingPulse 2.2s ease-in-out infinite; }
-    .lb-ring.r2 {
-      inset:-14px;
-      border-color: var(--accent-dim);
-      animation: lbRingPulse2 2.2s ease-in-out .4s infinite;
+    .vault-shock:nth-child(2) { animation-delay: 0.6s; }
+    .vault-shock:nth-child(3) { animation-delay: 1.2s; }
+    @keyframes vaultShock {
+      0%   { transform: scale(1);   opacity: .7; }
+      100% { transform: scale(4.5); opacity: 0;  }
     }
-    @keyframes lbShimmer {
-      0%   { background-position:-200% 0; }
-      100% { background-position: 200% 0; }
-    }
-    .lb-mark {
-      width:56px; height:56px;
-      border-radius:16px;
+    .vault-mark {
+      width: 72px; height: 72px;
+      border-radius: 18px;
       background: linear-gradient(135deg, var(--accent) 0%, #7A5A20 100%);
-      display:flex; align-items:center; justify-content:center;
-      position:relative; overflow:hidden;
-      box-shadow: 0 8px 32px rgba(201,169,110,.25), 0 2px 8px rgba(0,0,0,.4);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 26px;
+      box-shadow: 0 0 40px rgba(201,169,110,.4);
+      animation: vaultPulse 3s ease-in-out infinite;
+      position: relative; overflow: hidden;
+      z-index: 2;
     }
-    .lb-mark::after {
-      content:'';
-      position:absolute; inset:0;
+    .vault-mark::after {
+      content: '';
+      position: absolute; inset: 0;
       background: linear-gradient(90deg,
         transparent 0%,
-        rgba(255,255,255,.2) 40%,
-        rgba(255,255,255,.35) 50%,
-        rgba(255,255,255,.2) 60%,
+        rgba(255,255,255,.3) 50%,
         transparent 100%);
-      background-size:200% 100%;
-      animation: lbShimmer 2.4s ease-in-out infinite;
+      background-size: 200% 100%;
+      animation: vaultShimmer 2.4s ease-in-out infinite;
+      pointer-events: none;
     }
-    .lb-af {
-      font-size:22px; font-weight:700;
-      color:#fff;
+    .vault-mark img {
+      position: absolute; inset: 4px;
+      width: calc(100% - 8px); height: calc(100% - 8px);
+      object-fit: contain;
+      z-index: 2;
+    }
+    .vault-mark .vault-fb {
+      position: relative; z-index: 1;
       font-family: var(--mono);
-      letter-spacing:-.5px;
-      position:relative; z-index:1;
+      letter-spacing: -.5px;
     }
+    @keyframes vaultPulse  { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+    @keyframes vaultShimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
-    .loading-title {
+    .vault-bottom {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .vault-name {
       font-family: var(--script);
-      font-size: 28px;
+      font-size: 32px;
       color: var(--text);
-      margin-bottom: 8px;
       line-height: 1.1;
     }
-    .loading-label {
-      font-size: 11px;
-      color: var(--sub);
-      letter-spacing: 4px;
+    .vault-foot {
+      font-size: 9px;
+      letter-spacing: 5px;
+      color: var(--accent);
       font-family: var(--mono);
-      font-weight: 500;
-      margin-top: 6px;
+      text-transform: uppercase;
+      margin-top: 8px;
     }
-
-    @keyframes dotBounce {
-      0%,80%,100% { transform: translateY(0);   opacity:.35; }
-      40%         { transform: translateY(-7px); opacity:1;   }
-    }
-    .loading-dots {
-      display:flex; gap:6px;
-      justify-content:center;
-      margin-top: 18px;
-    }
-    .loading-dots span {
-      width:5px; height:5px;
-      border-radius:50%;
-      background: var(--accent);
-      opacity: .35;
-      animation: dotBounce 1.4s ease-in-out infinite;
-    }
-    .loading-dots span:nth-child(2) { animation-delay: .18s; }
-    .loading-dots span:nth-child(3) { animation-delay: .36s; }
 
     .fallback-msg {
       color: var(--muted);
@@ -753,22 +744,23 @@
 
   <!-- ③ 로딩 화면 -->
   <div id="loading-ui" class="full-screen">
-    <div class="loading-brand">
-      <div class="lb-ring r1"></div>
-      <div class="lb-ring r2"></div>
-      <div class="lb-mark">
-        <span class="lb-af">AF</span>
-      </div>
-    </div>
-    <div class="loading-title">Asset Flow</div>
-    <div class="loading-label">LOADING PORTFOLIO</div>
-    <div class="loading-dots">
-      <span></span><span></span><span></span>
-    </div>
-    <div class="fallback-msg" onclick="var u=getStoredUrl(); if(u) window.location.href=u;">
-      페이지가 멈췄다면 여기를 터치하세요
+  <div class="vault-stage">
+    <div class="vault-shock"></div>
+    <div class="vault-shock"></div>
+    <div class="vault-shock"></div>
+    <div class="vault-mark">
+      <span class="vault-fb">AF</span>
+      <img src="./icon.png" alt="" onerror="this.style.display='none'">
     </div>
   </div>
+  <div class="vault-bottom">
+    <div class="vault-name">Asset Flow</div>
+    <div class="vault-foot">PRIVATE · WEALTH</div>
+  </div>
+  <div class="fallback-msg" onclick="var u=getStoredUrl(); if(u) window.location.href=u;">
+    페이지가 멈췄다면 여기를 터치하세요
+  </div>
+</div>
 
   <!-- 설치 가이드 오버레이 -->
   <div id="guide-overlay">
