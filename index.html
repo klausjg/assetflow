@@ -419,11 +419,27 @@
     .vault-mark::after {
       display: none;
     }
-    .vault-mark .vault-fb {
-      position: relative; z-index: 1;
-      font-family: var(--mono);
-      letter-spacing: .08em;
-      text-shadow: 0 0 18px rgba(201,169,110,.28);
+    .vault-chart {
+      position: relative;
+      z-index: 1;
+      width: 62px;
+      height: 62px;
+      overflow: visible;
+      filter: drop-shadow(0 0 16px rgba(201,169,110,.24));
+    }
+    .vault-chart .chart-bar {
+      fill: var(--accent2);
+      opacity: .38;
+    }
+    .vault-chart .chart-line {
+      fill: none;
+      stroke: #fff8e8;
+      stroke-width: 5.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .vault-chart .chart-dot {
+      fill: #fff8e8;
     }
     @keyframes vaultPulse  { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
     @keyframes vaultShimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
@@ -736,7 +752,15 @@
     <div class="vault-shock"></div>
     <div class="vault-shock"></div>
     <div class="vault-mark">
-      <span class="vault-fb">AF</span>
+      <svg class="vault-chart" viewBox="0 0 72 72" aria-hidden="true" focusable="false">
+        <rect class="chart-bar" x="10" y="38" width="8" height="22" rx="3"></rect>
+        <rect class="chart-bar" x="25" y="26" width="8" height="34" rx="3"></rect>
+        <rect class="chart-bar" x="40" y="32" width="8" height="28" rx="3"></rect>
+        <rect class="chart-bar" x="55" y="15" width="8" height="45" rx="3"></rect>
+        <path class="chart-line" d="M8 52 C17 31 27 30 34 44 S45 18 54 34 S63 27 68 10"></path>
+        <circle class="chart-dot" cx="8" cy="52" r="3.8"></circle>
+        <circle class="chart-dot" cx="68" cy="10" r="3.8"></circle>
+      </svg>
     </div>
   </div>
   <div class="vault-bottom">
