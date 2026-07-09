@@ -3,874 +3,133 @@
 <head>
   <meta charset="UTF-8">
   <title>Asset Flow</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-  <!-- PWA Manifest -->
-  <link rel="manifest" href="./manifest.json?v=2">
-
-  <link rel="apple-touch-icon" sizes="180x180" href="./icon.png?v=2">
-  <link rel="icon" type="image/png" sizes="32x32" href="./icon.png?v=2">
-  <link rel="icon" type="image/png" sizes="16x16" href="./icon.png?v=2">
-  <link rel="shortcut icon" href="./icon.png?v=2">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <link rel="manifest" href="./manifest.json?v=3">
+  <link rel="apple-touch-icon" sizes="180x180" href="./icon.png?v=3">
+  <link rel="icon" type="image/png" sizes="32x32" href="./icon.png?v=3">
+  <link rel="icon" type="image/png" sizes="16x16" href="./icon.png?v=3">
+  <link rel="shortcut icon" href="./icon.png?v=3">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Asset Flow">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#0F1218">
-
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Pinyon+Script&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <style>
-    :root{
-      --bg:#0F1218; --surface:#131820; --card:#171E27; --card2:#1C2535;
-      --border:#1E2A38; --border-light:#2A3D52;
-      --accent:#C9A96E; --accent2:#E8D5A3; --accent-dim:rgba(201,169,110,0.12);
-      --muted:#4A5568; --sub:#7A8494; --text:#F5EDD8; --text-dim:#BFB99E;
-      --mono:'IBM Plex Mono',monospace;
-      --sans:'Noto Sans KR',-apple-system,'Malgun Gothic',sans-serif;
-      --script:'Pinyon Script',cursive;
-    }
-    [data-theme="sapphire"]{--bg:#0A1628;--surface:#0D1E36;--card:#101F38;--card2:#152540;--border:#1A2E4A;--border-light:#2A4A6A;--accent:#5B9BD5;--accent2:#A8C8E8;--accent-dim:rgba(91,155,213,0.12);--muted:#2A4A6A;--sub:#4A6A8A;--text:#E8F4FF;--text-dim:#8AAFD0;}
-    [data-theme="forest"]{--bg:#0C120C;--surface:#0A0F0A;--card:#0E150E;--card2:#121A12;--border:#1A2A1A;--border-light:#2A4A2A;--accent:#4CAF7A;--accent2:#A8DCBE;--accent-dim:rgba(76,175,122,0.12);--muted:#1E3A1E;--sub:#2A5A2A;--text:#D4EDDA;--text-dim:#7ABE9E;}
-    [data-theme="rose"]{--bg:#1A1A1E;--surface:#141416;--card:#18181C;--card2:#1E1E24;--border:#242428;--border-light:#32323A;--accent:#C47882;--accent2:#E8B8C0;--accent-dim:rgba(196,120,130,0.12);--muted:#3A3A42;--sub:#5A5A6A;--text:#F0EEF5;--text-dim:#9A98A8;}
-    [data-theme="hanji"]{--bg:#0E0C0A;--surface:#12100E;--card:#171410;--card2:#1E1A14;--border:#2A2018;--border-light:#3A3020;--accent:#D4A96A;--accent2:#EDD09A;--accent-dim:rgba(212,169,106,0.13);--muted:#4A3A2A;--sub:#8A7A6A;--text:#EDE0CC;--text-dim:#C4B49A;}
-    [data-theme="hangang"]{--bg:#060E18;--surface:#08121E;--card:#0C1826;--card2:#101E2E;--border:#142030;--border-light:#1E3048;--accent:#00C8FF;--accent2:#8AE2FF;--accent-dim:rgba(0,200,255,0.12);--muted:#1A4060;--sub:#2A6080;--text:#D0EEFF;--text-dim:#7AACCC;}
-    [data-theme="bukchon"]{--bg:#060E0A;--surface:#08120C;--card:#0C1810;--card2:#101E14;--border:#142A18;--border-light:#1E3C22;--accent:#00E8A0;--accent2:#8AF5D0;--accent-dim:rgba(0,232,160,0.12);--muted:#1A4030;--sub:#2A6050;--text:#D8FFF0;--text-dim:#7ABCAA;}
-    [data-theme="hongdae"]{--bg:#0E0806;--surface:#130B08;--card:#18100C;--card2:#1E1610;--border:#2A1A12;--border-light:#3A2418;--accent:#FF7A5A;--accent2:#FFB8A2;--accent-dim:rgba(255,122,90,0.13);--muted:#4A2A20;--sub:#7A5040;--text:#FFE8E0;--text-dim:#C4907A;}
-
-    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-
-    body, html {
-      background: var(--bg);
-      width:100%; height:100%;
-      overflow:hidden;
-      font-family: var(--sans);
-      color: var(--text);
-      transition: background .3s ease, color .3s ease;
-    }
-
-    body::before {
-      content:'';
-      position:fixed; inset:0;
-      background: radial-gradient(ellipse at center,
-                                   var(--accent-dim) 0%,
-                                   rgba(201,169,110,0.02) 40%,
-                                   transparent 70%);
-      pointer-events:none; z-index:0;
-      transition: background .3s ease;
-    }
-
-    .full-screen {
-      position:absolute; top:0; left:0;
-      width:100%; height:100%;
-      display:none;
-      flex-direction:column;
-      align-items:center; justify-content:center;
-      text-align:center;
-      padding:30px; z-index:1;
-      overflow-y: auto;
-    }
-
-    .icon-preview {
-      width:110px; height:110px;
-      border-radius:24px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.8),
-                  0 0 40px var(--accent-dim);
-      margin-bottom:25px;
-      border: 1px solid rgba(201,169,110,0.18);
-      object-fit:cover;
-      aspect-ratio:1/1;
-      flex-shrink:0;
-    }
-
-    @keyframes brandShimmer {
-      0% { background-position: 0% 50%; }
-      100% { background-position: 200% 50%; }
-    }
-    .brand-title {
-      font-family: var(--script);
-      font-size: 44px;
-      line-height: 1.1;
-      margin-bottom: 6px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent), var(--accent2));
-      background-size: 200% 100%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: brandShimmer 4s linear infinite;
-    }
-
-    .brand-sub {
-      color: var(--muted);
-      font-size: 10px;
-      letter-spacing: 3px;
-      font-weight: 600;
-      margin-bottom: 26px;
-      font-family: var(--sans);
-      text-transform: uppercase;
-    }
-
-    .description {
-      color: var(--sub);
-      margin-bottom: 32px;
-      line-height: 1.75;
-      font-size: 14px;
-      font-weight: 400;
-      max-width: 320px;
-    }
-
-    .guide-button {
-      background: linear-gradient(135deg, var(--accent) 0%, #7A5A20 100%);
-      color: #fff;
-      padding: 14px 32px;
-      border-radius: 50px;
-      font-weight: 700;
-      font-size: 14px;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 10px 28px rgba(201,169,110,0.28),
-                  0 2px 8px rgba(0,0,0,0.4),
-                  inset 0 1px 0 rgba(255,255,255,0.15);
-      letter-spacing: 0.3px;
-      font-family: var(--sans);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .guide-button:active {
-      transform: translateY(1px);
-      box-shadow: 0 5px 14px rgba(201,169,110,0.25),
-                  inset 0 1px 0 rgba(255,255,255,0.15);
-    }
-    .guide-button svg {
-      width: 16px; height: 16px;
-    }
-
-    .setup-card {
-      width: 100%;
-      max-width: 340px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 20px;
-      margin-bottom: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    }
-
-    .setup-label {
-      font-size: 11px;
-      color: var(--sub);
-      letter-spacing: 1.5px;
-      font-family: var(--mono);
-      font-weight: 500;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      text-align: left;
-    }
-
-    .url-input {
-      width: 100%;
-      padding: 12px 14px;
-      background: var(--bg);
-      border: 1px solid var(--border-light);
-      border-radius: 10px;
-      color: var(--text);
-      font-family: var(--mono);
-      font-size: 12px;
-      outline: none;
-      transition: border-color .15s, box-shadow .15s;
-      word-break: break-all;
-    }
-    .url-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-dim);
-    }
-    .url-input::placeholder {
-      color: var(--muted);
-      opacity: 0.7;
-    }
-
-    .url-hint {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 10px;
-      text-align: left;
-      line-height: 1.6;
-    }
-    .url-hint code {
-      font-family: var(--mono);
-      color: var(--text-dim);
-      background: var(--card2);
-      padding: 1px 5px;
-      border-radius: 4px;
-      font-size: 10px;
-    }
-
-    .error-msg {
-      color: #ff7a7a;
-      font-size: 11px;
-      margin-top: 8px;
-      text-align: left;
-      min-height: 16px;
-    }
-
-    .reset-link {
-      color: var(--muted);
-      font-size: 11px;
-      margin-top: 24px;
-      text-decoration: underline;
-      cursor: pointer;
-      letter-spacing: 0.3px;
-      font-family: var(--sans);
-      transition: color .15s;
-      background: none;
-      border: none;
-    }
-    .reset-link:hover { color: var(--sub); }
-
-    /* 기기 배지 */
-    .device-badge {
-      display: inline-block;
-      font-size: 10px;
-      color: var(--sub);
-      letter-spacing: 2px;
-      font-family: var(--mono);
-      margin-bottom: 16px;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-    }
-
-    /* ─────────────────────────────────────────
-       설치 가이드 오버레이 - 개선 버전
-       ───────────────────────────────────────── */
-    #guide-overlay {
-      display:none;
-      position:fixed; inset:0;
-      background: rgba(10,15,24,0.92);
-      z-index:9999;
-      backdrop-filter: blur(16px) saturate(180%);
-      -webkit-backdrop-filter: blur(16px) saturate(180%);
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 60px 30px 120px;
-      overflow-y: auto;
-    }
-    #guide-overlay.active { display: flex; }
-
-    .guide-close {
-      position: absolute;
-      top: 20px; right: 20px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: var(--text);
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      font-size: 20px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background .15s;
-      z-index: 10;
-    }
-    .guide-close:hover { background: rgba(255,255,255,0.14); }
-
-    .guide-title {
-      font-family: var(--script);
-      font-size: 32px;
-      color: var(--text);
-      margin-bottom: 6px;
-      line-height: 1.1;
-    }
-    .guide-subtitle {
-      font-size: 11px;
-      color: var(--sub);
-      letter-spacing: 3px;
-      font-family: var(--mono);
-      font-weight: 500;
-      margin-bottom: 32px;
-      text-transform: uppercase;
-    }
-
-    .guide-steps {
-      width: 100%;
-      max-width: 340px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .guide-step {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 16px 18px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      text-align: left;
-    }
-
-    .step-num {
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #1a1309;
-      font-weight: 700;
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      font-family: var(--mono);
-    }
-
-    .step-icon {
-      width: 32px; height: 32px;
-      color: var(--accent);
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .step-icon svg {
-      width: 100%; height: 100%;
-      fill: currentColor;
-    }
-
-    .step-text {
-      font-size: 13px;
-      color: var(--text);
-      line-height: 1.55;
-      flex: 1;
-    }
-    .step-text strong {
-      color: var(--accent2);
-      font-weight: 600;
-    }
-
-    /* 하단 화살표 - iOS용 */
-    @keyframes bounceDown {
-      0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.6; }
-      50%      { transform: translateX(-50%) translateY(10px); opacity: 1; }
-    }
-    .guide-arrow {
-      position: fixed;
-      bottom: 40px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: var(--accent);
-      animation: bounceDown 1.2s infinite ease-in-out;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      font-size: 10px;
-      letter-spacing: 2px;
-      font-family: var(--mono);
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-    .guide-arrow svg {
-      width: 24px; height: 24px;
-      fill: currentColor;
-    }
-
-    /* === Concept B · Vault impact === */
-    .vault-stage {
-      position: relative;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 64px;
-    }
-    .vault-shock {
-      position: absolute;
-      width: 72px; height: 72px;
-      border-radius: 50%;
-      border: 1px solid var(--accent);
-      opacity: 0;
-      animation: vaultShock 3s ease-out infinite;
-    }
-    .vault-shock:nth-child(2) { animation-delay: 0.6s; }
-    .vault-shock:nth-child(3) { animation-delay: 1.2s; }
-    @keyframes vaultShock {
-      0%   { transform: scale(1);   opacity: .7; }
-      100% { transform: scale(4.5); opacity: 0;  }
-    }
-    .vault-mark {
-      width: 72px; height: 72px;
-      border-radius: 0;
-      background: transparent;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--accent); font-weight: 700; font-size: 26px;
-      box-shadow: none;
-      animation: vaultPulse 3s ease-in-out infinite;
-      position: relative; overflow: visible;
-      z-index: 2;
-    }
-    .vault-mark::after {
-      display: none;
-    }
-    .vault-chart {
-      position: relative;
-      z-index: 1;
-      width: 62px;
-      height: 62px;
-      overflow: visible;
-      filter: drop-shadow(0 0 16px rgba(201,169,110,.24));
-    }
-    .vault-chart .chart-bar {
-      fill: var(--accent2);
-      opacity: .38;
-    }
-    .vault-chart .chart-line {
-      fill: none;
-      stroke: #fff8e8;
-      stroke-width: 5.5;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-    .vault-chart .chart-dot {
-      fill: #fff8e8;
-    }
-    @keyframes vaultPulse  { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
-    @keyframes vaultShimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-
-    .vault-bottom {
-      text-align: center;
-      margin-bottom: 32px;
-    }
-    .vault-name {
-      font-family: var(--script);
-      font-size: 32px;
-      color: var(--text);
-      line-height: 1.1;
-    }
-    .vault-foot {
-      font-size: 9px;
-      letter-spacing: 5px;
-      color: var(--accent);
-      font-family: var(--mono);
-      text-transform: uppercase;
-      margin-top: 8px;
-    }
-
-    .fallback-msg {
-      color: var(--muted);
-      font-size: 11px;
-      margin-top: 32px;
-      text-decoration: underline;
-      cursor: pointer;
-      letter-spacing: 0.3px;
-      font-family: var(--sans);
-      transition: color .15s;
-    }
-    .fallback-msg:hover { color: var(--sub); }
-  </style>
-
-  <script>
-    const STORAGE_KEY = 'af-app-url';
-    let deferredInstallPrompt = null;
-
-    (function applyStoredTheme(){
-      try {
-        const t = localStorage.getItem('af-theme') || 'obsidian';
-        if (t !== 'obsidian') document.documentElement.setAttribute('data-theme', t);
-      } catch(e) {}
-    })();
-
-    (function checkUrlParam(){
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const appParam = params.get('app');
-        if (appParam && isValidGasUrl(appParam)) {
-          localStorage.setItem(STORAGE_KEY, appParam);
-          history.replaceState(null, '', window.location.pathname);
-        }
-      } catch(e) {}
-    })();
-
-    function isValidGasUrl(url) {
-      if (!url || typeof url !== 'string') return false;
-      const trimmed = url.trim();
-      return /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec/.test(trimmed);
-    }
-
-    function getStoredUrl() {
-      try { return localStorage.getItem(STORAGE_KEY); }
-      catch(e) { return null; }
-    }
-
-    function detectDevice() {
-      const ua = navigator.userAgent;
-      const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-      const isAndroid = /Android/.test(ua);
-      return { isIOS, isAndroid };
-    }
-
-    function saveUrl() {
-      const input = document.getElementById('gas-url-input');
-      const errorEl = document.getElementById('url-error');
-      const url = input.value.trim();
-
-      if (!url) {
-        errorEl.textContent = 'URL을 입력하세요';
-        return;
-      }
-      if (!isValidGasUrl(url)) {
-        errorEl.textContent = '올바른 GAS URL 형식이 아닙니다';
-        return;
-      }
-
-      try {
-        localStorage.setItem(STORAGE_KEY, url);
-        errorEl.textContent = '';
-        init();
-      } catch(e) {
-        errorEl.textContent = '저장 실패. 브라우저 설정을 확인하세요.';
-      }
-    }
-
-    function resetUrl() {
-      if (!confirm('등록된 웹앱 URL을 초기화하시겠어요?')) return;
-      try {
-        localStorage.removeItem(STORAGE_KEY);
-        init();
-      } catch(e) {}
-    }
-
-    function hideAllScreens() {
-      document.getElementById('setup-ui').style.display = 'none';
-      document.getElementById('install-ui').style.display = 'none';
-      document.getElementById('loading-ui').style.display = 'none';
-      document.getElementById('guide-overlay').classList.remove('active');
-    }
-
-    async function triggerInstall() {
-      // Chrome 자동 설치 프롬프트 사용 가능 시 → 원클릭 설치
-      if (deferredInstallPrompt) {
-        try {
-          deferredInstallPrompt.prompt();
-          const choice = await deferredInstallPrompt.userChoice;
-          deferredInstallPrompt = null;
-          updateInstallButton();
-          if (choice.outcome !== 'accepted') {
-            // 사용자가 취소한 경우 가이드 보여주기
-            showGuide();
-          }
-        } catch (e) {
-          console.warn('Install prompt failed:', e);
-          showGuide();
-        }
-        return;
-      }
-
-      // 프롬프트 없음 → 가이드 표시
-      showGuide();
-    }
-
-    function showGuide() {
-      const device = detectDevice();
-      const iosGuide = document.getElementById('guide-ios');
-      const androidGuide = document.getElementById('guide-android');
-      const arrow = document.getElementById('guide-arrow-ios');
-
-      if (device.isIOS) {
-        iosGuide.style.display = 'block';
-        androidGuide.style.display = 'none';
-        arrow.style.display = 'flex';
-      } else {
-        iosGuide.style.display = 'none';
-        androidGuide.style.display = 'block';
-        arrow.style.display = 'none';
-      }
-
-      document.getElementById('guide-overlay').classList.add('active');
-    }
-
-    function closeGuide() {
-      document.getElementById('guide-overlay').classList.remove('active');
-    }
-
-    function updateInstallButton() {
-      const btn = document.getElementById('install-btn');
-      const badge = document.getElementById('device-badge');
-      if (!btn) return;
-
-      const device = detectDevice();
-
-      if (deferredInstallPrompt) {
-        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>홈 화면에 설치`;
-        if (badge) badge.textContent = '⚡ ONE-TAP INSTALL';
-      } else if (device.isIOS) {
-        btn.textContent = '앱 설치 가이드';
-        if (badge) badge.textContent = 'iOS SAFARI';
-      } else if (device.isAndroid) {
-        btn.textContent = '앱 설치 가이드';
-        if (badge) badge.textContent = 'ANDROID';
-      } else {
-        btn.textContent = '앱 설치 가이드';
-        if (badge) badge.textContent = 'DESKTOP';
-      }
-    }
-
-    function init() {
-      window._pwaStart = performance.now();
-      console.log('[PWA] init start');
-      hideAllScreens();
-
-      const APP_URL = getStoredUrl();
-
-      if (!APP_URL) {
-        document.getElementById('setup-ui').style.display = 'flex';
-        const input = document.getElementById('gas-url-input');
-        if (input) input.value = '';
-        return;
-      }
-
-      const isStandalone = window.navigator.standalone === true ||
-                           window.matchMedia('(display-mode: standalone)').matches;
-
-      const device = detectDevice();
-
-      /* [PC] 데스크톱에서 브라우저로 접속 → 설치 안내 없이 바로 GAS로 */
-      if (device.isDesktop && !isStandalone) {
-        document.getElementById('loading-ui').style.display = 'flex';
-        setTimeout(() => { window.location.href = APP_URL; }, 300);
-        return;
-      }
-
-      if (isStandalone) {
-        document.getElementById('loading-ui').style.display = 'flex';
-        console.log(`[PWA] redirect to GAS: ${(performance.now() - window._pwaStart).toFixed(0)}ms`);
-        setTimeout(() => { window.location.href = APP_URL; }, 300);
-        return;
-      }
-
-      document.getElementById('install-ui').style.display = 'flex';
-      updateInstallButton();
-    }
-
-    /* PWA 설치 프롬프트 캡처 */
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredInstallPrompt = e;
-      updateInstallButton();
-    });
-
-    window.addEventListener('appinstalled', () => {
-      deferredInstallPrompt = null;
-      updateInstallButton();
-      closeGuide();
-    });
-
-    /* Service Worker 등록 */
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(err => {
-          console.warn('SW registration failed:', err);
-        });
-      });
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const input = document.getElementById('gas-url-input');
-      if (input) {
-        input.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            saveUrl();
-          }
-        });
-      }
-      init();
-    });
-  </script>
+  <meta name="theme-color" content="#080A10">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./premium-mobile.css?v=3">
+  <script src="./premium-mobile.js?v=3" defer></script>
 </head>
 <body>
+  <div class="ambient" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
 
-  <!-- ① URL 등록 화면 -->
-  <div id="setup-ui" class="full-screen">
-    <img src="./icon.png?v=2" class="icon-preview" alt="Asset Flow">
-    <div class="brand-title">Asset Flow</div>
-    <div class="brand-sub">PORTFOLIO</div>
-    <p class="description">
-      먼저 본인의 웹앱 URL을 등록하세요.<br>
-      기기에 안전하게 저장됩니다.
-    </p>
-
-    <div class="setup-card">
-      <div class="setup-label">GOOGLE APPS SCRIPT URL</div>
-      <input type="url"
-             id="gas-url-input"
-             class="url-input"
-             placeholder="https://script.google.com/macros/s/.../exec"
-             autocomplete="off"
-             autocapitalize="off"
-             spellcheck="false">
-      <div class="error-msg" id="url-error"></div>
-      <div class="url-hint">
-        Apps Script에서 <code>배포 → 웹 앱</code>으로 배포한 URL을 붙여넣으세요.
+  <section id="setup-ui" class="screen" aria-label="Asset Flow 연결 설정">
+    <div class="layout">
+      <div class="brand-block">
+        <div class="lux-pill">Private Wealth OS</div>
+        <p class="eyebrow">Noir Ledger Concept</p>
+        <h1>Asset<br>Flow</h1>
+        <p class="lead">매일 열어보고 싶은 자산 화면. 숫자는 차분하게, 흐름은 선명하게, 첫 진입부터 프리미엄하게.</p>
       </div>
-    </div>
 
-    <button class="guide-button" onclick="saveUrl()">
-      저장하고 계속하기
-    </button>
-  </div>
-
-  <!-- ② 설치 안내 화면 -->
-  <div id="install-ui" class="full-screen">
-    <img src="./icon.png?v=2" class="icon-preview" alt="Asset Flow">
-    <div class="brand-title">Asset Flow</div>
-    <div class="brand-sub">PORTFOLIO</div>
-    <div class="device-badge" id="device-badge">DETECTING...</div>
-    <p class="description">
-      나의 자산을 한눈에, 우아하게.<br>
-      홈 화면에 설치하고 언제든 열어보세요.
-    </p>
-    <button class="guide-button" id="install-btn" onclick="triggerInstall()">
-      앱 설치
-    </button>
-    <button class="reset-link" onclick="resetUrl()">
-      웹앱 URL 다시 등록하기
-    </button>
-  </div>
-
-  <!-- ③ 로딩 화면 -->
-  <div id="loading-ui" class="full-screen">
-  <div class="vault-stage">
-    <div class="vault-shock"></div>
-    <div class="vault-shock"></div>
-    <div class="vault-shock"></div>
-    <div class="vault-mark">
-      <svg class="vault-chart" viewBox="0 0 72 72" aria-hidden="true" focusable="false">
-        <rect class="chart-bar" x="10" y="38" width="8" height="22" rx="3"></rect>
-        <rect class="chart-bar" x="25" y="26" width="8" height="34" rx="3"></rect>
-        <rect class="chart-bar" x="40" y="32" width="8" height="28" rx="3"></rect>
-        <rect class="chart-bar" x="55" y="15" width="8" height="45" rx="3"></rect>
-        <path class="chart-line" d="M8 52 C17 31 27 30 34 44 S45 18 54 34 S63 27 68 10"></path>
-        <circle class="chart-dot" cx="8" cy="52" r="3.8"></circle>
-        <circle class="chart-dot" cx="68" cy="10" r="3.8"></circle>
-      </svg>
-    </div>
-  </div>
-  <div class="vault-bottom">
-    <div class="vault-name">Asset Flow</div>
-    <div class="vault-foot">PRIVATE · WEALTH</div>
-  </div>
-  <div class="fallback-msg" onclick="var u=getStoredUrl(); if(u) window.location.href=u;">
-    페이지가 멈췄다면 여기를 터치하세요
-  </div>
-</div>
-
-  <!-- 설치 가이드 오버레이 -->
-  <div id="guide-overlay">
-    <button class="guide-close" onclick="closeGuide()">×</button>
-
-    <div class="guide-title">홈 화면에 추가</div>
-    <div class="guide-subtitle">INSTALL GUIDE</div>
-
-    <!-- iOS Safari 가이드 -->
-    <div id="guide-ios" style="display:none; width:100%; max-width:340px;">
-      <div class="guide-steps">
-        <div class="guide-step">
-          <div class="step-num">1</div>
-          <div class="step-icon">
-            <!-- iOS 공유 아이콘 -->
-            <svg viewBox="0 0 24 24">
-              <path d="M12 2L8 6l1.41 1.41L11 5.83V16h2V5.83l1.59 1.58L16 6l-4-4zM5 20V10h3V8H3v14h18V8h-5v2h3v10H5z"/>
+      <div class="phone-shell" aria-hidden="true">
+        <div class="phone-screen">
+          <div class="app-head">
+            <div class="mark"><span class="mark-icon">⌁</span><div><b>Asset Flow</b><small>Portfolio</small></div></div>
+            <span class="live-pill">LIVE</span>
+          </div>
+          <article class="wealth-card">
+            <span class="label">Private Net Worth</span>
+            <strong>₩284.7<em>M</em></strong>
+            <div class="gain-row"><span>▲ +2.84%</span><small>30D</small></div>
+            <svg class="line-chart" viewBox="0 0 320 116" preserveAspectRatio="none">
+              <defs><linearGradient id="lineA" x1="0" x2="1"><stop offset="0" stop-color="#8DB7FF"/><stop offset=".52" stop-color="#E8C987"/><stop offset="1" stop-color="#FFF0BD"/></linearGradient><linearGradient id="areaA" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#E8C987" stop-opacity=".22"/><stop offset="1" stop-color="#E8C987" stop-opacity="0"/></linearGradient></defs>
+              <path class="grid" d="M0 30H320M0 70H320M0 110H320"/>
+              <path class="area" d="M0 84 C30 72 46 48 74 57 S118 78 150 50 S194 20 224 36 S270 68 320 20 L320 116 L0 116 Z"/>
+              <path class="line" d="M0 84 C30 72 46 48 74 57 S118 78 150 50 S194 20 224 36 S270 68 320 20"/>
+              <circle cx="320" cy="20" r="5"/>
             </svg>
-          </div>
-          <div class="step-text">
-            하단의 <strong>공유</strong> 버튼을 탭하세요
-          </div>
-        </div>
-
-        <div class="guide-step">
-          <div class="step-num">2</div>
-          <div class="step-icon">
-            <!-- 홈화면 추가 아이콘 -->
-            <svg viewBox="0 0 24 24">
-              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 11h-4v4h-2v-4H7v-2h4V8h2v4h4v2z"/>
-            </svg>
-          </div>
-          <div class="step-text">
-            <strong>홈 화면에 추가</strong>를 선택하세요
-          </div>
-        </div>
-
-        <div class="guide-step">
-          <div class="step-num">3</div>
-          <div class="step-icon">
-            <svg viewBox="0 0 24 24">
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-            </svg>
-          </div>
-          <div class="step-text">
-            우측 상단 <strong>추가</strong>를 탭하면 완료
+          </article>
+          <div class="mini-grid">
+            <article><span>Allocation</span><div class="bars"><i></i><i></i><i></i><i></i><i></i></div><small>ETF 중심 안정 성장</small></article>
+            <article><span>Cash Flow</span><b>₩1.2M</b><small>이번 달 배당·이자</small></article>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 안드로이드 수동 가이드 -->
-    <div id="guide-android" style="display:none; width:100%; max-width:340px;">
-      <div class="guide-steps">
-        <div class="guide-step">
-          <div class="step-num">1</div>
-          <div class="step-icon">
-            <svg viewBox="0 0 24 24">
-              <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-            </svg>
-          </div>
-          <div class="step-text">
-            우측 상단 <strong>⋮ 메뉴</strong>를 탭하세요
-          </div>
+      <div class="glass-panel">
+        <h2>나만의 자산 금고 연결</h2>
+        <p>Google Apps Script 웹앱 URL을 한 번만 등록하면 홈 화면에서 바로 Asset Flow를 열 수 있습니다.</p>
+        <label class="input-label" for="gas-url-input"><span>Apps Script URL</span><em>Secure Local</em></label>
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l2.12-2.12a5 5 0 0 0-7.07-7.07L10.9 5.03"/><path d="M14 11a5 5 0 0 0-7.07 0L4.8 13.12a5 5 0 0 0 7.07 7.07l1.21-1.21"/></svg>
+          <input type="url" id="gas-url-input" class="url-input" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off" autocapitalize="off" spellcheck="false">
         </div>
-
-        <div class="guide-step">
-          <div class="step-num">2</div>
-          <div class="step-icon">
-            <svg viewBox="0 0 24 24">
-              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 11h-4v4h-2v-4H7v-2h4V8h2v4h4v2z"/>
-            </svg>
-          </div>
-          <div class="step-text">
-            <strong>홈 화면에 추가</strong> 또는 <strong>앱 설치</strong>를 선택하세요
-          </div>
-        </div>
-
-        <div class="guide-step">
-          <div class="step-num">3</div>
-          <div class="step-icon">
-            <svg viewBox="0 0 24 24">
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-            </svg>
-          </div>
-          <div class="step-text">
-            <strong>추가</strong> 버튼을 탭하면 완료
-          </div>
-        </div>
+        <div class="error-msg" id="url-error"></div>
+        <div class="hint">Apps Script에서 <code>배포 → 웹 앱</code>으로 생성한 URL을 붙여넣으세요. URL은 이 기기에만 저장됩니다.</div>
+        <button class="primary-btn" onclick="saveUrl()">연결하고 계속하기</button>
       </div>
     </div>
+  </section>
 
-    <!-- iOS 전용 하단 화살표 (공유 버튼 위치 가리킴) -->
-    <div class="guide-arrow" id="guide-arrow-ios" style="display:none;">
-      <span>공유 버튼</span>
-      <svg viewBox="0 0 24 24">
-        <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
-      </svg>
+  <section id="install-ui" class="screen" aria-label="Asset Flow 설치">
+    <div class="layout install-layout">
+      <div class="phone-shell" aria-hidden="true">
+        <div class="phone-screen">
+          <div class="app-head"><div class="mark"><span class="mark-icon">⌁</span><div><b>Asset Flow</b><small>Daily Pulse</small></div></div><span class="live-pill ready">READY</span></div>
+          <article class="wealth-card compact">
+            <span class="label">Today’s Portfolio</span>
+            <strong>₩284.7<em>M</em></strong>
+            <div class="gain-row"><span>▲ +₩3.42M</span><small>09:41</small></div>
+            <svg class="line-chart" viewBox="0 0 320 116" preserveAspectRatio="none">
+              <defs><linearGradient id="lineB" x1="0" x2="1"><stop offset="0" stop-color="#8DB7FF"/><stop offset=".52" stop-color="#E8C987"/><stop offset="1" stop-color="#FFF0BD"/></linearGradient><linearGradient id="areaB" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#8DB7FF" stop-opacity=".18"/><stop offset="1" stop-color="#E8C987" stop-opacity="0"/></linearGradient></defs>
+              <path class="grid" d="M0 30H320M0 70H320M0 110H320"/><path class="area b" d="M0 78 C34 58 62 78 90 57 S142 26 174 44 S218 74 246 50 S286 26 320 34 L320 116 L0 116 Z"/><path class="line b" d="M0 78 C34 58 62 78 90 57 S142 26 174 44 S218 74 246 50 S286 26 320 34"/><circle cx="320" cy="34" r="5"/>
+            </svg>
+          </article>
+          <div class="mini-grid"><article><span>Risk</span><b>Low</b><small>변동성 안정권</small></article><article><span>Income</span><b>D-12</b><small>예상 배당 입금</small></article></div>
+        </div>
+      </div>
+
+      <div class="install-card">
+        <div class="install-meta"><span id="device-badge" class="device-badge">DETECTING...</span><small>PRIVATE · MOBILE</small></div>
+        <h2>홈 화면에 둘 만큼 아름답게.</h2>
+        <p>앱처럼 열리고, 자산의 흐름은 더 조용하고 깊게 보여줍니다. 매일 한 번 확인하고 싶은 프리미엄 대시보드 톤으로 재설계했습니다.</p>
+        <ul>
+          <li>블랙 글래스와 샴페인 골드 기반 럭셔리 톤</li>
+          <li>숫자, 차트, 자산 구성을 모바일에서 한눈에 읽히는 카드 구조</li>
+          <li>설치 가이드와 로딩 화면까지 앱의 일부처럼 연결</li>
+        </ul>
+        <button class="primary-btn" id="install-btn" onclick="triggerInstall()">설치 가이드 보기</button>
+        <button class="text-btn" onclick="resetUrl()">웹앱 URL 다시 등록하기</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="loading-ui" class="screen loading-screen" aria-label="Asset Flow 로딩">
+    <div class="loading-inner">
+      <div class="vault-orb"><div class="vault-core">⌁</div></div>
+      <h2>Opening Asset Flow</h2>
+      <p>PRIVATE · WEALTH · DASHBOARD</p>
+      <button class="fallback-msg" onclick="var u=getStoredUrl(); if(u) window.location.href=u;">페이지가 멈췄다면 여기를 터치하세요</button>
+    </div>
+  </section>
+
+  <div id="guide-overlay" aria-modal="true" role="dialog" aria-label="Asset Flow 설치 가이드">
+    <div class="guide-card">
+      <div class="guide-head"><div><h2>홈 화면에 추가</h2><p>CONCIERGE INSTALL GUIDE</p></div><button onclick="closeGuide()" aria-label="닫기">×</button></div>
+      <div id="guide-ios" class="guide-set">
+        <div class="guide-step"><b>1</b><span>Safari 하단의 <strong>공유</strong> 버튼을 탭하세요.</span></div>
+        <div class="guide-step"><b>2</b><span><strong>홈 화면에 추가</strong>를 선택하세요.</span></div>
+        <div class="guide-step"><b>3</b><span>우측 상단 <strong>추가</strong>를 탭하면 완료됩니다.</span></div>
+      </div>
+      <div id="guide-android" class="guide-set">
+        <div class="guide-step"><b>1</b><span>브라우저 우측 상단 <strong>⋮ 메뉴</strong>를 탭하세요.</span></div>
+        <div class="guide-step"><b>2</b><span><strong>홈 화면에 추가</strong> 또는 <strong>앱 설치</strong>를 선택하세요.</span></div>
+        <div class="guide-step"><b>3</b><span><strong>추가</strong> 버튼을 탭하면 완료됩니다.</span></div>
+      </div>
+      <div class="guide-arrow" id="guide-arrow-ios">공유 버튼 위치 ↓</div>
     </div>
   </div>
-
 </body>
 </html>
